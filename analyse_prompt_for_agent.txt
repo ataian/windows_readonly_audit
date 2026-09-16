@@ -12,18 +12,7 @@ Wichtig vor der eigentlichen Bewertung:
 
 2. `collector_status_final.csv` ist der maßgebliche finale Collector-Status.
 
-3. Es gibt keinen bekannten Collector-ERROR. Der einzige PARTIAL-Eintrag ist `Sysinternals Autorunsc`.
-   Dieser PARTIAL-Status ist ein Parserartefakt des Collectors, kein fehlgeschlagener Autoruns-Lauf:
-
-   * `autorunsc64.exe` lief mit ExitCode 0.
-   * Die rohe `persistence/autoruns_all_users.csv` enthält vor dem eigentlichen CSV-Header vier Sysinternals-Bannerzeilen.
-   * Deshalb konnte der Collector die Spalte `Image Path` nicht automatisch erkennen.
-   * Ich habe daraus zusätzlich `persistence/autoruns_all_users_clean.csv` erzeugt.
-   * Diese bereinigte Datei enthält 1786 korrekt importierbare Autoruns-Einträge.
-   * Verwende für die eigentliche Autoruns-Auswertung primär `autoruns_all_users_clean.csv`.
-   * Die originale `autoruns_all_users.csv` bitte als unveränderte Rohquelle behalten.
-
-4. Die Meldungen
+3. Die Meldungen
    `Error expanding profile path for NT-AUTORITÄT\Lokaler Dienst`
    und
    `Error expanding profile path for NT-AUTORITÄT\Netzwerkdienst`
