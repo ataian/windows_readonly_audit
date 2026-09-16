@@ -54,6 +54,12 @@ To collect 60 days of selected events:
 .\Joi-Windows-Security-Audit.ps1 -EventDays 60
 ```
 
+## Give the gathered data to your agent
+
+Send only the generated ZIP to Joi/Hermes. No remote Windows access is required. 
+Give her the prompt provided in ```analyse_prompt_for_agent.txt```.
+After analysis, delete the ZIP/audit folder if you no longer want the snapshot retained.
+
 ## Recommended: include Sysinternals Autoruns
 
 Autoruns has broader knowledge of Windows auto-start/persistence locations than the normal Task Manager startup page.
@@ -83,12 +89,6 @@ The collector records both sides so the agent can compare:
 - `SecurityHealthService` / `wscsvc` service state
 - Security Center registered AV/firewall products and raw `productState`
 - Security Center / Security Health event channels if present
-
-## After the audit
-
-Send only the generated ZIP to Joi/Hermes. No remote Windows access is required. 
-Give her the prompt provided in analyse_prompt_for_agent.txt
-After analysis, delete the ZIP/audit folder if you no longer want the snapshot retained.
 
 ## Troubleshooting
 
