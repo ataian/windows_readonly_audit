@@ -1,0 +1,115 @@
+Der Auditlauf war vollständig erfolgreich bis auf einen Parserfehler bei der nachgelagerten Autoruns-Korrelation. autorunsc64.exe selbst lief mit ExitCode 0. Die rohe Datei persistence/autoruns_all_users.csv enthält einen vierzeiligen Sysinternals-Banner vor dem CSV-Header; daraus wurde persistence/autoruns_all_users_clean.csv erzeugt. Diese bereinigte Datei enthält 1786 Autoruns-Einträge und ist für die Analyse zu verwenden. Der PARTIAL-Status von Sysinternals Autorunsc in collector_status_final.csv ist daher als Collector-Parserartefakt zu interpretieren, nicht als fehlgeschlagene Autoruns-Erfassung
+
+
+Bitte führe auf Basis der ZIP `INSERT_NAME_HERE.zip` ein vollständiges Windows-Security- und Konfigurationsaudit durch.
+
+Wichtig vor der eigentlichen Bewertung:
+
+1. Entpacke die ZIP vollständig und lies zuerst:
+
+   * `README_FOR_AGENT.txt`
+   * `scope.json`
+   * `collector_status_final.csv`
+   * `collector-warnings.log`
+   * falls vorhanden `collector-errors.log`
+
+2. `collector_status_final.csv` ist der maßgebliche finale Collector-Status.
+
+3. Es gibt keinen bekannten Collector-ERROR. Der einzige PARTIAL-Eintrag ist `Sysinternals Autorunsc`.
+   Dieser PARTIAL-Status ist ein Parserartefakt des Collectors, kein fehlgeschlagener Autoruns-Lauf:
+
+   * `autorunsc64.exe` lief mit ExitCode 0.
+   * Die rohe `persistence/autoruns_all_users.csv` enthält vor dem eigentlichen CSV-Header vier Sysinternals-Bannerzeilen.
+   * Deshalb konnte der Collector die Spalte `Image Path` nicht automatisch erkennen.
+   * Ich habe daraus zusätzlich `persistence/autoruns_all_users_clean.csv` erzeugt.
+   * Diese bereinigte Datei enthält 1786 korrekt importierbare Autoruns-Einträge.
+   * Verwende für die eigentliche Autoruns-Auswertung primär `autoruns_all_users_clean.csv`.
+   * Die originale `autoruns_all_users.csv` bitte als unveränderte Rohquelle behalten.
+
+4. Die Meldungen
+   `Error expanding profile path for NT-AUTORITÄT\Lokaler Dienst`
+   und
+   `Error expanding profile path for NT-AUTORITÄT\Netzwerkdienst`
+   stammen von Autorunsc beim Scan aller Profile. Autorunsc selbst endete trotzdem mit ExitCode 0. Bitte diese Meldungen im Kontext bewerten und nicht automatisch als kompromittiertes System interpretieren.
+
+Ziel des Audits:
+
+Ich möchte insbesondere wissen, ob beim Windows-Start, bei Benutzeranmeldung oder im Hintergrund Dinge automatisch gestartet werden, die ich nicht bewusst eingerichtet habe, unnötig sind, veraltet sind oder ein Sicherheitsrisiko darstellen.
+
+Bitte untersuche deshalb möglichst vollständig und korreliert:
+
+* Autoruns / alle Persistenzmechanismen
+* Scheduled Tasks
+* Services und ServiceDlls
+* Treiber
+* Run / RunOnce / Winlogon / IFEO / Active Setup usw.
+* WMI Permanent Event Subscriptions
+* BITS Jobs
+* Startup-Folder
+* PowerShell-Profile als Persistenzort
+* installierte klassische Software
+* AppX/MSIX-Pakete
+* laufende Prozesse und Kommandozeilen
+* Netzwerk-Listener und aktive Verbindungen
+* Firewall-Regeln
+* SMB-Konfiguration und Shares
+* RDP / WinRM / OpenSSH / RemoteRegistry
+* lokale Benutzer und Gruppen, insbesondere Administratoren
+* Defender-Konfiguration
+* Defender-Ausnahmen
+* Defender-Threat-/Detection-Historie
+* Windows Security Center / SecurityHealth / registrierte AV-Produkte
+* den Widerspruch, dass Windows mir regelmäßig meldet „Antivirus ist aus“, obwohl Defender offenbar läuft und Scans durchgeführt werden
+* Windows Update / Pending Reboot / Pending Servicing
+* UAC / LSA / Credential-/Security-relevante Registry-Konfiguration
+* PowerShell-Policies
+* AppLocker, falls vorhanden
+* Exploit Protection / Process Mitigations
+* Zertifikatsspeicher auf ungewöhnliche oder problematische Einträge
+* Eventlogs der letzten erfassten Zeitspanne
+
+Bei den Eventlogs unbedingt die jeweiligen `*.meta.json` Dateien berücksichtigen. Wenn `HitMaxEventsLimit=true` ist oder die Source-Log-Retention kürzer als der gewünschte Zeitraum ist, darfst du nicht behaupten, dass der komplette Zeitraum untersucht wurde.
+
+Bitte korreliere Findings über mehrere Quellen. Beispiel:
+Autostart/Task/Service → ausführbare Datei → Publisher/Signatur/Hash → installierte Software → laufender Prozess → Listener/Verbindung → Eventlog-Historie.
+
+Wichtig für die Bewertung:
+
+Nicht jedes ungewöhnliche Objekt ist automatisch verdächtig. Microsoft-, Treiber-, OEM-, Software-Updater- und legitime Systemeinträge bitte entsprechend einordnen. Wenn du etwas nicht sicher bewerten kannst, kennzeichne es als „manuell prüfen“ statt eine Malware-Feststellung zu erfinden.
+
+Bitte unterscheide bei jedem Finding:
+
+* Kritisch
+* Hoch
+* Mittel
+* Niedrig
+* Informativ / Aufräumpotenzial
+
+Für jedes relevante Finding brauche ich:
+
+* was genau gefunden wurde
+* wo es gefunden wurde
+* betroffene Datei/Task/Service/Registry-Key etc.
+* warum es auffällig oder problematisch ist
+* welche anderen Auditquellen die Bewertung stützen
+* ob es wahrscheinlich legitim, unnötig/veraltet, fehlkonfiguriert oder tatsächlich verdächtig ist
+* konkrete Empfehlung
+* welche Änderung nötig wäre, aber bitte NICHT selbst ausführen
+
+Bitte mache ausdrücklich KEINE automatische Remediation. Keine Tasks deaktivieren, Dienste stoppen, Registry ändern, Programme deinstallieren, Defender-Ausnahmen löschen usw. Erst Findings und Empfehlungen liefern; Änderungen bespreche ich danach separat.
+
+Am Ende möchte ich einen strukturierten Bericht mit:
+
+1. Executive Summary
+2. Wichtigste Security-Findings
+3. Defender/Windows-Security-Widerspruch
+4. Autostart/Persistenz
+5. Netzwerk-/Remote-Exposure
+6. Security-Konfiguration
+7. Veraltete/unnötige Software, Tasks und Services
+8. Eventlog-Auffälligkeiten
+9. Dinge, die harmlos wirken, aber aufgeräumt werden könnten
+10. Punkte, die wegen fehlender Daten oder Scope-Grenzen nicht sicher bewertet werden konnten
+11. Priorisierte Remediation-Vorschläge, aber noch ohne Ausführung
+
+Bitte zitiere bei jedem Finding die konkreten Dateien innerhalb des Audit-Datensatzes, aus denen du die Schlussfolgerung ableitest.
