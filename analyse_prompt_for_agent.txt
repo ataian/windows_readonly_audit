@@ -1,6 +1,3 @@
-Der Auditlauf war vollständig erfolgreich bis auf einen Parserfehler bei der nachgelagerten Autoruns-Korrelation. autorunsc64.exe selbst lief mit ExitCode 0. Die rohe Datei persistence/autoruns_all_users.csv enthält einen vierzeiligen Sysinternals-Banner vor dem CSV-Header; daraus wurde persistence/autoruns_all_users_clean.csv erzeugt. Diese bereinigte Datei enthält 1786 Autoruns-Einträge und ist für die Analyse zu verwenden. Der PARTIAL-Status von Sysinternals Autorunsc in collector_status_final.csv ist daher als Collector-Parserartefakt zu interpretieren, nicht als fehlgeschlagene Autoruns-Erfassung
-
-
 Bitte führe auf Basis der ZIP `INSERT_NAME_HERE.zip` ein vollständiges Windows-Security- und Konfigurationsaudit durch.
 
 Wichtig vor der eigentlichen Bewertung:
